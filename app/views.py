@@ -305,11 +305,17 @@ def task_dashboard(request):
 
     # Task filtering based on user role
     if request.user.is_superuser:  # Admins see all tasks
-        tasks = TaskAssignment.objects.all()
+        tasks = TaskAssignment.objects.all().order_by('task__start_date')  # Order by start date
+
+
     elif request.user.groups.filter(name__in=['TeamLeader', 'Manager']).exists():  # Team Leaders/Managers see their assigned tasks or tasks assigned to them
         tasks = TaskAssignment.objects.filter(assigned_by=request.user) | TaskAssignment.objects.filter(employee__user=request.user)
+
+
     else:  # Employees see only tasks assigned to them
         tasks = TaskAssignment.objects.filter(employee__user=request.user)
+
+
 
     # Apply filters
     employee_filter = request.GET.get('employee')
