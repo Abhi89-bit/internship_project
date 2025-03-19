@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.contrib.auth import views as auth_views
 from app import views
+from app.views import task_dashboard
 
 urlpatterns = [
     path('', RedirectView.as_view(url='departments/')),
@@ -27,4 +28,11 @@ urlpatterns = [
     path('employees/create/', views.create_employee, name='create_employee'),
     path('employees/update/<int:emp_id>/', views.update_employee, name='update_employee'),
     path('employees/delete/<int:emp_id>/', views.delete_employee, name='delete_employee'),
+
+    #Task URLs
+    path('dashboard/', task_dashboard, name='task_dashboard'),
+    path('create/', views.create_task, name='create_task'),
+    path('update/<int:assignment_id>/', views.update_task, name='update_task'),
+    path('delete/<int:assignment_id>/', views.delete_task, name='delete_task'),
+    path('task/<int:assignment_id>/', views.task_detail, name='task_detail'), 
 ]

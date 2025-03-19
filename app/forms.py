@@ -46,10 +46,6 @@ class RoleForm(forms.ModelForm):
         }
 
 class EmployeeForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(EmployeeForm, self).__init__(*args, **kwargs)
-        self.fields['reporting_manager_id'].queryset = Employee.objects.all()  
-
     POSITION_CHOICES = [
         ('', 'Select a position'),
         ('Accountant', 'Accountant'),
@@ -61,9 +57,19 @@ class EmployeeForm(forms.ModelForm):
         ('Specialist', 'Specialist'),
         ('Technician', 'Technician'),
     ]
-    
-    position = forms.ChoiceField(choices=POSITION_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
-    
+
+    position = forms.ChoiceField(
+        choices=POSITION_CHOICES, 
+        required=False,  # ✅ Make position optional
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    role = forms.ModelChoiceField(
+        queryset=Role.objects.all(),
+        required=False,  # ✅ Make role optional
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = Employee
         fields = [
@@ -74,25 +80,21 @@ class EmployeeForm(forms.ModelForm):
             'email',
             'mobile',
             'department',
-            'role_id',
-            'reporting_manager_id',
-            'date_of_joining'
+            'role',  
+            'reporting_manager',  
+            'date_of_joining',
+            'position',
         ]
 
         widgets = {
             'department': forms.Select(attrs={'class': 'form-control'}),
-            'role_id': forms.Select(attrs={'class': 'form-control'}),
-            'reporting_manager_id': forms.Select(attrs={'class': 'form-control', 'required': False}),
+            'reporting_manager': forms.Select(attrs={'class': 'form-control'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control'}),
-            'date_of_joining': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'placeholder': 'Select date'}),
-        }
-
-
-        widgets = {
-            'department': forms.Select(attrs={'class': 'form-control'})
+            'date_of_joining': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['department'].queryset = Department.objects.filter(status=True)
-        self.fields['role_id'].queryset = Role.objects.all()
+        self.fields['role'].queryset = Role.objects.all()
+        self.fields['reporting_manager'].queryset = Employee.objects.all()

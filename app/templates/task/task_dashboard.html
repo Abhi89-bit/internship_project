@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block header %}
+    <header class="bg-primary text-white py-4 mb-5">
+        <h2 class="text-center fw-bold">Task Management Dashboard</h2>
+    </header>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row g-4">
+        <div>
+            <a href="{% url 'task_dashboard' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{% url 'create_task' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create Task
+            </a>
+        </div>
+        <!-- Filters Section -->
+        <div class="col-lg-3 col-md-4">
+            <div class="card border-0 shadow-lg h-100">
+                <div class="card-body">
+                    <h4 class="fw-semibold mb-4 text-primary">Filter Tasks</h4>
+                    <form method="GET">
+                        {% if is_admin %}
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Employee</label>
+                            <select name="employee" class="form-select shadow-sm" onchange="this.form.submit()">
+                                <option value="">All Employees</option>
+                                {% for emp in employees %}
+                                    <option value="{{ emp.username }}" {% if request.GET.employee == emp.username %}selected{% endif %}>{{ emp.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Status</label>
+                            <select name="status" class="form-select shadow-sm" onchange="this.form.submit()">
+                                <option value="">All Statuses</option>
+                                <option value="Pending" {% if request.GET.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="In Progress" {% if request.GET.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                <option value="Completed" {% if request.GET.status == 'Completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Date Range</label>
+                            <div class="input-group mb-3 shadow-sm">
+                                <span class="input-group-text bg-white"><i class="bi bi-calendar"></i></span>
+                                <input type="date" name="start_date_from" value="{{ request.GET.start_date_from }}" class="form-control" onchange="this.form.submit()">
+                            </div>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-white"><i class="bi bi-calendar"></i></span>
+                                <input type="date" name="start_date_to" value="{{ request.GET.start_date_to }}" class="form-control" onchange="this.form.submit()">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Table -->
+        <div class="col-lg-9 col-md-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body">
+                    <h4 class="fw-semibold mb-4 text-primary">Task Overview</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Employee</th>
+                                    <th>Task</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Actions</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in page_obj %}
+                                    <tr>
+                                        <td>{{ forloop.counter|add:page_obj.start_index|default:1 }}</td>
+                                        <td>{{ task.employee.username }}</td>
+                                        <td>{{ task.task.task_title }}</td>
+                                        <td>{{ task.task.start_date|date:'d M Y' }}</td>
+                                        <td>{{ task.task.end_date|date:'d M Y' }}</td>
+                                        <td>
+                                            <a href="{% url 'task_detail' task.assignment_id %}" class="btn btn-outline-primary btn-sm me-2">Details</a>
+                                            {% if task.status != 'Completed' %}
+                                                <form method="POST" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="assignment_id" value="{{ task.assignment_id }}">
+                                                    <input type="hidden" name="mark_completed" value="true">
+                                                    <button type="submit" class="btn btn-success btn-sm">Complete</button>
+                                                </form>
+                                            {% else %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><a href="{% url 'update_task' task.assignment_id %}" class="btn btn-outline-warning btn-sm"><i class="bi bi-pencil"></i></a></td>
+                                        <td><a href="{% url 'delete_task' task.assignment_id %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a></td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="8" class="text-center py-4">No tasks available</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.employee %}&employee={{ request.GET.employee }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_date_from %}&start_date_from={{ request.GET.start_date_from }}{% endif %}{% if request.GET.start_date_to %}&start_date_to={{ request.GET.start_date_to }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.employee %}&employee={{ request.GET.employee }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_date_from %}&start_date_from={{ request.GET.start_date_from }}{% endif %}{% if request.GET.start_date_to %}&start_date_to={{ request.GET.start_date_to }}{% endif %}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Statistics -->
+    <div class="row g-4 mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body">
+                    <h4 class="fw-semibold mb-4 text-primary">Task Analytics</h4>
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="list-group shadow-sm">
+                                <div class="list-group-item"><strong>Total Tasks:</strong> {{ stats.total }}</div>
+                                <div class="list-group-item text-success"><strong>Completed:</strong> {{ stats.completed }}</div>
+                                <div class="list-group-item text-danger"><strong>Pending:</strong> {{ stats.pending }}</div>
+                                <div class="list-group-item text-info"><strong>In Progress:</strong> {{ stats.in_progress }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <canvas id="taskChart" style="max-height: 400px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('taskChart').getContext('2d');
+        const taskChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Total Tasks', 'Completed', 'Pending', 'In Progress'],
+                datasets: [{
+                    label: 'Task Statistics',
+                    data: [{{ stats.total }}, {{ stats.completed }}, {{ stats.pending }}, {{ stats.in_progress }}],
+                    backgroundColor: [
+                        'rgba(108, 99, 255, 0.8)',  // Purple
+                        'rgba(40, 167, 69, 0.8)',   // Green
+                        'rgba(220, 53, 69, 0.8)',   // Red
+                        'rgba(255, 193, 7, 0.8)'    // Yellow
+                    ],
+                    borderColor: [
+                        'rgba(108, 99, 255, 1)',
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(255, 193, 7, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        title: {
+                            display: true,
+                            text: 'Number of Tasks',
+                            font: { size: 14 }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Task Categories',
+                            font: { size: 14 }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Task Distribution Overview',
+                        font: { size: 18 },
+                        padding: 20
+                    }
+                }
+            }
+        });
+    });
+</script>
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .card {
+        border-radius: 15px;
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .btn {
+        border-radius: 8px;
+        padding: 6px 12px;
+    }
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .form-select, .form-control {
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+{% endblock %}

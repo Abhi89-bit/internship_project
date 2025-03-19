@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Task{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-danger">
+        <div class="card-header bg-danger text-white text-center">
+            <h3>Delete Task: {{ assignment.task.task_title }}</h3>
+        </div>
+        <div class="card-body text-center">
+            <p class="fs-5">Are you sure you want to delete the task <strong>"{{ assignment.task.task_title }}"</strong>?</p>
+            
+            <form method="POST" class="mt-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger px-4">Confirm Delete</button>
+                <a href="{% url 'task_dashboard' %}" class="btn btn-secondary px-4">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
