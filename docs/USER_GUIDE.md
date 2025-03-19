@@ -12,15 +12,21 @@
    - [Editing Employee Information](#editing-employee-information)
    - [Viewing Employee Details](#viewing-employee-details)
    - [Deleting an Employee](#deleting-an-employee)
-4. [Role Management](#role-management)
+4. [Task Management](#task-management)
+   - [Task Management Dashboard](#task-management-dashboard)
+   - [Creating a Task](#creating-a-task)
+   - [Viewing Task Details](#viewing-task-details)
+   - [Updating a Task](#updating-a-task)
+   - [Deleting a Task](#deleting-a-task)
+5. [Role Management](#role-management)
    - [Creating a Role](#creating-a-role)
    - [Editing a Role](#editing-a-role)
    - [Deleting a Role](#deleting-a-role)
-5. [Search Functionality](#search-functionality)
-6. [Frequently Asked Questions](#frequently-asked-questions)
+6. [Search Functionality](#search-functionality)
+7. [Frequently Asked Questions](#frequently-asked-questions)
 
 ## Introduction
-This guide provides instructions for using the Employee Management System to manage departments, roles, and employees effectively. The system allows users to create, edit, and delete departments and employees, as well as search for specific records and manage roles. Recent updates include the ability to assign positions to roles and employees, enhancing the management capabilities.
+This guide provides instructions for using the Employee Management System to manage departments, roles, employees, and tasks effectively. The system allows users to create, edit, and delete records, as well as search for specific records and manage roles. Recent updates include the ability to assign positions to roles and employees, enhancing the management capabilities.
 
 ## Department Management
 
@@ -74,6 +80,43 @@ Note: Departments with active employees cannot be deleted
 1. From the Employee Dashboard, click the delete icon (trash) next to the employee
 2. Confirm the deletion
 
+## Task Management
+
+### Task Management Dashboard
+- Access the task management dashboard to view all tasks.
+- Use filters to sort tasks by employee, status, and date range.
+
+### Creating a Task
+1. Navigate to the Task Dashboard
+2. Click "Create Task"
+3. Fill in the form with the following details:
+   - Task Title
+   - Description
+   - Priority (High, Medium, Low)
+   - Start Date and End Date
+   - Task Type (Individual or Team)
+   - Assigned Employee
+4. Click "Create Task"
+
+### Viewing Task Details
+1. From the Task Dashboard, click on a task to view its details.
+2. Information displayed includes:
+   - Task Title
+   - Description
+   - Start Date and End Date
+   - Priority
+   - Task Type
+   - Assigned Employees and their statuses
+
+### Updating a Task
+1. From the Task Dashboard, click the edit icon (pencil) next to the task.
+2. Update the necessary fields.
+3. Click "Update Task"
+
+### Deleting a Task
+1. From the Task Dashboard, click the delete icon (trash) next to the task.
+2. Confirm the deletion.
+
 ## Role Management
 
 ### Creating a Role
@@ -95,8 +138,8 @@ Note: Departments with active employees cannot be deleted
 2. Confirm the deletion
 
 ## Search Functionality
-- Use the search bar to find departments or employees
-- Search by name or other relevant fields
+- Use the search bar to find departments, employees, or tasks.
+- Search by name or other relevant fields.
 
 ## Frequently Asked Questions
 
@@ -111,3 +154,15 @@ A: Use the edit function to update email and phone numbers.
 
 Q: What happens to employees when a department is deleted?
 A: Employees must be reassigned to another department before deletion.
+
+Q: How do I create a new task?
+A: Navigate to the Task Dashboard and click "Create Task." Fill in the required fields and submit the form.
+
+Q: How do I update a task?
+A: Click the edit icon next to the task in the Task Dashboard, make the necessary changes, and click "Update Task."
+
+Q: How do I delete a task?
+A: Click the delete icon next to the task in the Task Dashboard and confirm the deletion.
+
+## Conclusion
+This system is designed to streamline the management of employees, departments, roles, and tasks within an organization. For any issues or further assistance, please contact support.
